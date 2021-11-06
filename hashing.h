@@ -18,7 +18,7 @@ struct HashChain {
     uint size;
     Elem** tab;
     // Initialisierung mit GrÃ¶ÃŸe n.
-    explicit HashChain (uint n) {
+    HashChain (uint n) {
         size = n;
         tab = new Elem* [n] ();
     }
@@ -31,11 +31,16 @@ struct HashChain {
         uint i = hashval(k) % size;
         for (Elem* p = tab[i]; p != nullptr; p = p->next) {
             if (p->key == k) {
-                // Do something
-                *p = v;
+                p->val = v;
                 return true;
             }
         }
+        Elem* currentFirstElem = tab[i];
+        Elem* newEntry = new Elem();
+        newEntry->key = k;
+        newEntry->val = v;
+        newEntry->next = currentFirstElem;
+        tab[i] = newEntry;
         return true;
     }
 
@@ -64,6 +69,11 @@ struct HashChain {
         // Dump table contents
         // Platz Key Value
         // 5 (2,3) "zwei"
+        for (uint i = 0; i < size; i++) {
+            for (Elem* p = tab[i]; p != nullptr; p = p->next) {
+                cout << i << " " << p->key << " \"" << p->val << "\"" << endl;
+            }
+        }
     }
 };
 
