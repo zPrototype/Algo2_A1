@@ -77,13 +77,26 @@ struct HashChain {
     }
 };
 
-// Sondierungssequenz mit Schluesseltyp K fÃ¼r lineare Sondierung.
+// Sondierungssequenz mit Schluesseltyp K fuer lineare Sondierung.
 // An der Stelle, an der LinProb fuer einen bestimmten Schluesseltyp K
 // verwendet wird, muss wiederum uint hashval (K) bekannt sein.
 template <typename K>
 struct LinProb {
-    // Initialisierung der Sequenz mit Schluessel k und TabellengrÃ¶ÃŸe n.
-    LinProb (K k, uint n)
+
+    uint size;
+    K key;
+    uint currLinOffset;
+    bool isInitalCalculated;
+    uint initialValue;
+
+    // Initialisierung der Sequenz mit Schluessel k und Tabellengroesse n.
+    LinProb (K k, uint n) {
+        size = n;
+        key = k;
+        currLinOffset = 0;
+        isInitalCalculated = false;
+        initialValue = 0;
+    }
 
     // Den ersten bzw. naechsten Wert der Sequenz liefern.
     // Nach einem Aufruf des Konstruktors darf diese Funktion also
@@ -99,7 +112,19 @@ struct LinProb {
     // gespeichert werden.
     // Dann kann bei realistischen Tabellengroessen n kein Ueberlauf
     // auftreten.
-    uint next ()
+    uint next() {
+        if (currLinOffset == size - 1) {
+            // Crash program because we iterated over the whole hashtable
+            return 0;
+        }
+        if (!isInitalCalculated) {
+            // Cache the first value because of overflowing hash function
+            initialValue = hashval(key) % size;
+            isInitalCalculated = true;
+        }
+
+        return initialValue + currLinOffset++;
+    }
 };
 
 // Sondierungssequenz mit Schluesseltyp K fuer quadratische Sondierung,
