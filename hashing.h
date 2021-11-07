@@ -67,14 +67,19 @@ struct HashChain {
         uint idx = hashval(k) % size;
         Elem *prevElement = nullptr;
         Elem *elem;
-        if (tab[idx] == nullptr) return true;
+        // If element to remove doesn't exist in the first place we return false.
+        if (tab[idx] == nullptr) return false;
+        // If element exists go through the list until the keys match.
         for (elem = tab[idx]; elem != nullptr; elem = elem->next) {
             if (elem->key == k) break;
+            // Keep track of the element
             prevElement = elem;
         }
         if (elem == nullptr) return false;
+        // If there is no previous element we update the index.
         if (prevElement == nullptr) {
             tab[idx] = elem->next;
+            // Otherwise we reconnect the previous Element to the next Element to keep the linked list intact.
         } else {
             prevElement->next = elem->next;
         }
