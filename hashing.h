@@ -88,13 +88,13 @@ struct HashChain {
     // Leere Plaetze werden nicht ausgegeben.
     // Bei Verwendung von dump muss es passende Ausgabeoperatoren (<<)
     // fuer die Typen K und V geben.
-    void dump () {
+    void dump() {
         // Dump table contents
         // Platz Key Value
         // 5 (2,3) "zwei"
-        for (uint i = 0; i < size; i++) {
-            for (Elem* p = tab[i]; p != nullptr; p = p->next) {
-                cout << i << " " << p->key << " \"" << p->val << "\"" << endl;
+        for (uint idx = 0; idx < size; idx++) {
+            for (Elem *p = tab[idx]; p != nullptr; p = p->next) {
+                cout << idx << " " << p->key << " " << p->val << endl;
             }
         }
     }
@@ -103,22 +103,20 @@ struct HashChain {
 // Sondierungssequenz mit Schluesseltyp K fuer lineare Sondierung.
 // An der Stelle, an der LinProb fuer einen bestimmten Schluesseltyp K
 // verwendet wird, muss wiederum uint hashval (K) bekannt sein.
-template <typename K>
+template<typename K>
 struct LinProb {
 
     uint size;
     K key;
     uint currLinOffset;
-    bool isInitalCalculated;
     uint initialValue;
 
     // Initialisierung der Sequenz mit Schluessel k und Tabellengroesse n.
-    LinProb (K k, uint n) {
+    LinProb(K k, uint n) {
         size = n;
         key = k;
         currLinOffset = 0;
-        isInitalCalculated = false;
-        initialValue = 0;
+        initialValue = n;
     }
 
     // Den ersten bzw. naechsten Wert der Sequenz liefern.
