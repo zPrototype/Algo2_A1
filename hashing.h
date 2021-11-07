@@ -7,55 +7,78 @@ using uint = unsigned int;
 // verwendet wird, muss eine Funktion uint hashval (K) zur Berechnung
 // von Streuwerten sowie ein passender Gleichheitsoperator (==) fuer den
 // Typ K bekannt sein.
-template <typename K, typename V>
+template<typename K, typename V>
 struct HashChain {
     struct Elem {
         K key;
         V val;
-        Elem* next;
+        Elem *next;
     };
 
     uint size;
-    Elem** tab;
+    Elem **tab;
+
     // Initialisierung mit GrÃ¶ÃŸe n.
-    HashChain (uint n) {
+    explicit HashChain(uint n) {
         size = n;
-        tab = new Elem* [n] ();
+        tab = new Elem *[n]();
     }
 
     // Eintrag mit Schluessel k und Wert v (am Anfang der jeweiligen
     // Liste) hinzufuegen (wenn es noch keinen solchen Eintrag gibt)
     // bzw. ersetzen (wenn es bereits einen gibt).
     // Der Resultatwert ist immer true.
-    bool put (K k, V v) {
-        uint i = hashval(k) % size;
-        for (Elem* p = tab[i]; p != nullptr; p = p->next) {
+    bool put(K k, V v) {
+        uint idx = hashval(k) % size;
+        for (Elem *p = tab[idx]; p != nullptr; p = p->next) {
             if (p->key == k) {
                 p->val = v;
                 return true;
             }
         }
-        Elem* currentFirstElem = tab[i];
-        Elem* newEntry = new Elem();
+        Elem *currentFirstElem = tab[idx];
+        Elem *newEntry = new Elem();
         newEntry->key = k;
         newEntry->val = v;
         newEntry->next = currentFirstElem;
-        tab[i] = newEntry;
+        tab[idx] = newEntry;
         return true;
     }
 
     // Wert zum Schluessel k ueber den Referenzparameter v zurueckliefern,
     // falls vorhanden; der Resultatwert ist in diesem Fall true.
     // Andernfalls bleibt v unveraendert, und der Resultatwert ist false.
-    bool get (K k, V& v) {
-
+    bool get(K k, V &v) {
+        uint idx = hashval(k) % size;
+        if (tab[idx] == nullptr) return false;
+        for (Elem *p = tab[idx]; p != nullptr; p = p->next) {
+            if (p->key == k) {
+                v = p->val;
+                return true;
+            }
+        }
+        return false;
     }
 
     // Eintrag mit Schluessel k entfernen, falls vorhanden;
     // der Resultatwert ist in diesem Fall true.
     // Andernfalls wirkungslos, und der Resultatwert ist false.
-    bool remove (K k) {
-
+    bool remove(K k) {
+        uint idx = hashval(k) % size;
+        Elem *prevElement = nullptr;
+        Elem *elem;
+        if (tab[idx] == nullptr) return true;
+        for (elem = tab[idx]; elem != nullptr; elem = elem->next) {
+            if (elem->key == k) break;
+            prevElement = elem;
+        }
+        if (elem == nullptr) return false;
+        if (prevElement == nullptr) {
+            tab[idx] = elem->next;
+        } else {
+            prevElement->next = elem->next;
+        }
+        return true;
     }
 
     // Inhalt der Tabelle zu Testzwecken ausgeben:
