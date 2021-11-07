@@ -141,22 +141,47 @@ struct LinProb {
     uint next() {
         if (currLinOffset == size - 1) {
             // Crash program because we iterated over the whole hashtable
-            return 0;
+            return size;
         }
-        if (!isInitalCalculated) {
+        if (initialValue == size) {
             // Cache the first value because of overflowing hash function
             initialValue = hashval(key) % size;
-            isInitalCalculated = true;
         }
 
-        return initialValue + currLinOffset++;
+        return (initialValue + currLinOffset++) % size;
     }
 };
 
 // Sondierungssequenz mit Schluesseltyp K fuer quadratische Sondierung,
 // analog zu LinProb.
-template <typename K>
+template<typename K>
 struct QuadProb {
+    uint size;
+    K key;
+    uint currQuadOffset;
+    uint initialValue;
+
+    QuadProb(K k, uint n) {
+        size = n;
+        key = k;
+        currQuadOffset = 0;
+        initialValue = n;
+    }
+
+    uint next() {
+        if (currQuadOffset == size - 1) {
+            // Crash programm because of overflowing hash function.
+            return size;
+        }
+        if (initialValue == size) {
+            initialValue = hashval(key) % size;
+        }
+
+        uint newValue = (initialValue + (currQuadOffset + currQuadOffset * currQuadOffset) / 2) % size;
+        currQuadOffset++;
+
+        return newValue;
+    }
 };
 
 // Sondierungssequenz mit Schluesseltyp K fuer doppelte Streuung.
@@ -165,8 +190,25 @@ struct QuadProb {
 // Streuwertfunktion uint hashval2 (K, uint n) bekannt sein, die nur
 // Werte von 1 bis n - 1 liefert, die teilerfremd zu n sind.
 // Ansonsten analog zu LinProb.
-template <typename K>
+template<typename K>
 struct DblHash {
+    uint size;
+    K key;
+    uint hashcount;
+
+    DblHash(K k, uint n) {
+        size = n;
+        key = k;
+        hashcount = 0;
+    }
+
+    uint next() {
+        if (hashcount == size - 1) return size;
+        uint hash1 = hashval(key) & size;
+        uint hash2 = hashval2(key) % size;
+        uint res = (hash1 + hashcount++ * hash2) % size;
+        return res;
+    }
 };
 
 // Mit offener Adressierung implementierte Streuwerttabelle mit
