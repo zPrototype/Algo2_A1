@@ -116,13 +116,13 @@ int main (int argc, char* argv []) {
             test(HashChain<Point, string>(n), prompt);
             break;
         case 'l':
-            test(HashOpen<Point, string, LinProb<Point>>(n), prompt);
+            test(HashOpen<Point, string, LinProb<Point> >(n), prompt);
             break;
         case 'q':
-            test(HashOpen<Point, string, QuadProb<Point>>(n), prompt);
+            test(HashOpen<Point, string, QuadProb<Point> >(n), prompt);
             break;
         case 'd':
-            test(HashOpen<Point, string, DblHash<Point>>(n), prompt);
+            test(HashOpen<Point, string, DblHash<Point> >(n), prompt);
             break;
     }
 }
