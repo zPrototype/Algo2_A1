@@ -221,9 +221,24 @@ struct DblHash {
 // put ist bei einer vollen Tabelle wirkungslos und liefert false,
 // wenn ein neuer Eintrag hinzugefuegt werden muesste.
 // dump gibt von Plaetzen mit Laeschmarkierung nur ihre Nummer aus.
-template <typename K, typename V, typename S>
+template<typename K, typename V, typename S>
 struct HashOpen {
-};//
+
+    struct SimpleElem {
+        K key;
+        V val;
+    };
+
+    SimpleElem *TOMBSTONE = new SimpleElem();
+    SimpleElem **tab;
+    uint size;
+
+    HashOpen(uint n) {
+        size = n;
+        tab = new SimpleElem *[n]();
+        tab[5] = TOMBSTONE;
+    }
+
 // Created by Lucas Noki on 29.10.21.
 //
 
