@@ -8,8 +8,10 @@ using uint = unsigned int;
 // von Streuwerten sowie ein passender Gleichheitsoperator (==) fuer den
 // Typ K bekannt sein.
 template<typename K, typename V>
-struct HashChain {
-    struct Elem {
+struct HashChain
+{
+    struct Elem
+    {
         K key;
         V val;
         Elem *next;
@@ -19,7 +21,8 @@ struct HashChain {
     Elem **tab;
 
     // Initialisierung mit GrÃ¶ÃŸe n.
-    explicit HashChain(uint n) {
+    explicit HashChain(uint n)
+    {
         size = n;
         tab = new Elem *[n]();
     }
@@ -28,10 +31,13 @@ struct HashChain {
     // Liste) hinzufuegen (wenn es noch keinen solchen Eintrag gibt)
     // bzw. ersetzen (wenn es bereits einen gibt).
     // Der Resultatwert ist immer true.
-    bool put(K k, V v) {
+    bool put(K k, V v)
+    {
         uint idx = hashval(k) % size;
-        for (Elem *p = tab[idx]; p != nullptr; p = p->next) {
-            if (p->key == k) {
+        for (Elem *p = tab[idx]; p != nullptr; p = p->next)
+        {
+            if (p->key == k)
+            {
                 p->val = v;
                 return true;
             }
@@ -48,11 +54,14 @@ struct HashChain {
     // Wert zum Schluessel k ueber den Referenzparameter v zurueckliefern,
     // falls vorhanden; der Resultatwert ist in diesem Fall true.
     // Andernfalls bleibt v unveraendert, und der Resultatwert ist false.
-    bool get(K k, V &v) {
+    bool get(K k, V &v)
+    {
         uint idx = hashval(k) % size;
         if (tab[idx] == nullptr) return false;
-        for (Elem *p = tab[idx]; p != nullptr; p = p->next) {
-            if (p->key == k) {
+        for (Elem *p = tab[idx]; p != nullptr; p = p->next)
+        {
+            if (p->key == k)
+            {
                 v = p->val;
                 return true;
             }
@@ -63,24 +72,28 @@ struct HashChain {
     // Eintrag mit Schluessel k entfernen, falls vorhanden;
     // der Resultatwert ist in diesem Fall true.
     // Andernfalls wirkungslos, und der Resultatwert ist false.
-    bool remove(K k) {
+    bool remove(K k)
+    {
         uint idx = hashval(k) % size;
         Elem *prevElement = nullptr;
         Elem *elem;
         // If element to remove doesn't exist in the first place we return false.
         if (tab[idx] == nullptr) return false;
         // If element exists go through the list until the keys match.
-        for (elem = tab[idx]; elem != nullptr; elem = elem->next) {
+        for (elem = tab[idx]; elem != nullptr; elem = elem->next)
+        {
             if (elem->key == k) break;
             // Keep track of the element
             prevElement = elem;
         }
         if (elem == nullptr) return false;
         // If there is no previous element we update the index.
-        if (prevElement == nullptr) {
+        if (prevElement == nullptr)
+        {
             tab[idx] = elem->next;
             // Otherwise we reconnect the previous Element to the next Element to keep the linked list intact.
-        } else {
+        } else
+        {
             prevElement->next = elem->next;
         }
         return true;
@@ -93,12 +106,15 @@ struct HashChain {
     // Leere Plaetze werden nicht ausgegeben.
     // Bei Verwendung von dump muss es passende Ausgabeoperatoren (<<)
     // fuer die Typen K und V geben.
-    void dump() {
+    void dump()
+    {
         // Dump table contents
         // Platz Key Value
         // 5 (2,3) "zwei"
-        for (uint idx = 0; idx < size; idx++) {
-            for (Elem *p = tab[idx]; p != nullptr; p = p->next) {
+        for (uint idx = 0; idx < size; idx++)
+        {
+            for (Elem *p = tab[idx]; p != nullptr; p = p->next)
+            {
                 cout << idx << " " << p->key << " " << p->val << endl;
             }
         }
@@ -109,7 +125,8 @@ struct HashChain {
 // An der Stelle, an der LinProb fuer einen bestimmten Schluesseltyp K
 // verwendet wird, muss wiederum uint hashval (K) bekannt sein.
 template<typename K>
-struct LinProb {
+struct LinProb
+{
 
     uint size;
     K key;
@@ -117,7 +134,8 @@ struct LinProb {
     uint initialValue;
 
     // Initialisierung der Sequenz mit Schluessel k und Tabellengroesse n.
-    LinProb(K k, uint n) {
+    LinProb(K k, uint n)
+    {
         size = n;
         key = k;
         currLinOffset = 0;
@@ -138,12 +156,15 @@ struct LinProb {
     // gespeichert werden.
     // Dann kann bei realistischen Tabellengroessen n kein Ueberlauf
     // auftreten.
-    uint next() {
-        if (currLinOffset == size - 1) {
+    uint next()
+    {
+        if (currLinOffset == size - 1)
+        {
             // Crash program because we iterated over the whole hashtable
             return size;
         }
-        if (initialValue == size) {
+        if (initialValue == size)
+        {
             // Cache the first value because of overflowing hash function
             initialValue = hashval(key) % size;
         }
@@ -155,25 +176,30 @@ struct LinProb {
 // Sondierungssequenz mit Schluesseltyp K fuer quadratische Sondierung,
 // analog zu LinProb.
 template<typename K>
-struct QuadProb {
+struct QuadProb
+{
     uint size;
     K key;
     uint currQuadOffset;
     uint initialValue;
 
-    QuadProb(K k, uint n) {
+    QuadProb(K k, uint n)
+    {
         size = n;
         key = k;
         currQuadOffset = 0;
         initialValue = n;
     }
 
-    uint next() {
-        if (currQuadOffset == size - 1) {
+    uint next()
+    {
+        if (currQuadOffset == size - 1)
+        {
             // Crash programm because of overflowing hash function.
             return size;
         }
-        if (initialValue == size) {
+        if (initialValue == size)
+        {
             initialValue = hashval(key) % size;
         }
 
@@ -191,18 +217,21 @@ struct QuadProb {
 // Werte von 1 bis n - 1 liefert, die teilerfremd zu n sind.
 // Ansonsten analog zu LinProb.
 template<typename K>
-struct DblHash {
+struct DblHash
+{
     uint size;
     K key;
     uint hashcount;
 
-    DblHash(K k, uint n) {
+    DblHash(K k, uint n)
+    {
         size = n;
         key = k;
         hashcount = 0;
     }
 
-    uint next() {
+    uint next()
+    {
         if (hashcount == size - 1) return size;
         uint hash1 = hashval(key) & size;
         uint hash2 = hashval2(key) % size;
@@ -222,9 +251,11 @@ struct DblHash {
 // wenn ein neuer Eintrag hinzugefuegt werden muesste.
 // dump gibt von Plaetzen mit Laeschmarkierung nur ihre Nummer aus.
 template<typename K, typename V, typename S>
-struct HashOpen {
+struct HashOpen
+{
 
-    struct SimpleElem {
+    struct SimpleElem
+    {
         K key;
         V val;
     };
@@ -233,17 +264,20 @@ struct HashOpen {
     SimpleElem **tab;
     uint size;
 
-    HashOpen(uint n) {
+    HashOpen(uint n)
+    {
         size = n;
         tab = new SimpleElem *[n]();
         tab[5] = TOMBSTONE;
     }
 
-    bool put(K k, V v) {
+    bool put(K k, V v)
+    {
         S *sondierung = new S(k, size);
         uint pos = sondierung->next();
         SimpleElem *p = tab[pos];
-        if (!p) {
+        if (!p)
+        {
             // Create new element and add it to tab[pos]
             auto *newElem = new SimpleElem();
             newElem->key = k;
@@ -251,11 +285,13 @@ struct HashOpen {
             tab[pos] = newElem;
             return true;
         }
-        do {
+        do
+        {
             if (!p) break;
             if (pos == size) return false;
             if (p == TOMBSTONE) break;
-            if (p->key == k) {
+            if (p->key == k)
+            {
                 p->val = v;
                 return true;
             }
@@ -270,14 +306,17 @@ struct HashOpen {
         return true;
     }
 
-    bool get(K k, V &v) {
+    bool get(K k, V &v)
+    {
         S *sondierung = new S(k, size);
         uint pos = sondierung->next();
         SimpleElem *p = tab[pos];
-        do {
+        do
+        {
             if (pos == size) return false;
             if (!p) return false;
-            if (p->key == k) {
+            if (p->key == k)
+            {
                 v = p->val;
                 return true;
             }
@@ -286,16 +325,21 @@ struct HashOpen {
         } while (true);
     }
 
-    bool remove(K k) {
+    bool remove(K k)
+    {
 
     }
 
-    void dump() {
-        for (uint idx = 0; idx < size; idx++) {
+    void dump()
+    {
+        for (uint idx = 0; idx < size; idx++)
+        {
             if (!tab[idx]) continue;
-            if (tab[idx] == TOMBSTONE) {
+            if (tab[idx] == TOMBSTONE)
+            {
                 cout << idx << endl;
-            } else {
+            } else
+            {
                 cout << idx << " " << tab[idx]->key << " " << tab[idx]->val << endl;
             }
         }
