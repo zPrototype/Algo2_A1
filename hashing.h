@@ -234,9 +234,8 @@ struct DblHash
     {
         if (hashcount == size - 1) return size;
         uint hash1 = hashval(key) & size;
-        uint hash2 = hashval2(key) % size;
-        uint res = (hash1 + hashcount++ * hash2) % size;
-        return res;
+        uint hash2 = hashval2(key, size) % size;
+        return (((hash1 + ++hashcount) * hash2) % size) - 1;
     }
 };
 
