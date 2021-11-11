@@ -128,12 +128,12 @@ struct LinProb {
     // Nach einem Aufruf des Konstruktors darf diese Funktion also
     // bis zu n-mal aufgerufen werden.
     // Achtung: Die direkte Verwendung der Formel
-    // s[j](k) = (h(k) + j) mod n
+    // subs[j](k) = (h(k) + j) mod n
     // kann durch arithmetischen Ueberlauf zu falschen Ergebnissen
     // fuehren, wenn h(k) sehr gross ist.
-    // Deshalb sollte nur der erste Wert s[0](k) = h(k) mod n direkt
+    // Deshalb sollte nur der erste Wert subs[0](k) = h(k) mod n direkt
     // und alle weiteren Werte jeweils aus dem vorigen Wert berechnet
-    // werden: s[j](k) = (s[j-1](k) + 1) mod n fuer j = 1, ..., n-1.
+    // werden: subs[j](k) = (subs[j-1](k) + 1) mod n fuer j = 1, ..., n-1.
     // Der vorige Wert kann hierfuer in einer Elementvariablen
     // gespeichert werden.
     // Dann kann bei realistischen Tabellengroessen n kein Ueberlauf
@@ -239,6 +239,70 @@ struct HashOpen {
         tab[5] = TOMBSTONE;
     }
 
+    bool put(K k, V v) {
+        S *sondierung = new S(k, size);
+        uint pos = sondierung->next();
+        SimpleElem *p = tab[pos];
+        if (!p) {
+            // Create new element and add it to tab[pos]
+            auto *newElem = new SimpleElem();
+            newElem->key = k;
+            newElem->val = v;
+            tab[pos] = newElem;
+            return true;
+        }
+        do {
+            if (!p) break;
+            if (pos == size) return false;
+            if (p == TOMBSTONE) break;
+            if (p->key == k) {
+                p->val = v;
+                return true;
+            }
+            pos = sondierung->next();
+            p = tab[pos];
+        } while (true);
+
+        auto *newEntry = new SimpleElem();
+        newEntry->key = k;
+        newEntry->val = v;
+        tab[pos] = newEntry;
+        return true;
+    }
+
+    bool get(K k, V &v) {
+        S *sondierung = new S(k, size);
+        uint pos = sondierung->next();
+        SimpleElem *p = tab[pos];
+        do {
+            if (pos == size) return false;
+            if (!p) return false;
+            if (p->key == k) {
+                v = p->val;
+                return true;
+            }
+            pos = sondierung->next();
+            p = tab[pos];
+        } while (true);
+    }
+
+    bool remove(K k) {
+
+    }
+
+    void dump() {
+        for (uint idx = 0; idx < size; idx++) {
+            if (!tab[idx]) continue;
+            if (tab[idx] == TOMBSTONE) {
+                cout << idx << endl;
+            } else {
+                cout << idx << " " << tab[idx]->key << " " << tab[idx]->val << endl;
+            }
+        }
+    }
+};
+
+//
 // Created by Lucas Noki on 29.10.21.
 //
 
