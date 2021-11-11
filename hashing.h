@@ -268,7 +268,6 @@ struct HashOpen
     {
         size = n;
         tab = new SimpleElem *[n]();
-        tab[5] = TOMBSTONE;
     }
 
     bool put(K k, V v)
@@ -327,7 +326,21 @@ struct HashOpen
 
     bool remove(K k)
     {
-
+        S *sondierung = new S(k, size);
+        uint pos = sondierung->next();
+        SimpleElem *p = tab[pos];
+        do
+        {
+            if (pos == size) return false;
+            if (!p) return false;
+            if (p->key == k)
+            {
+                tab[pos] = TOMBSTONE;
+                return true;
+            }
+            pos = sondierung->next();
+            p = tab[pos];
+        } while (true);
     }
 
     void dump()
