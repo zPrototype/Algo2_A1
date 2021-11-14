@@ -20,7 +20,6 @@ struct HashChain
     uint size;
     Elem **tab;
 
-    // Initialisierung mit GrÃ¶ÃŸe n.
     explicit HashChain(uint n)
     {
         size = n;
